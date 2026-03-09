@@ -1,0 +1,41 @@
+/* 引入Tailwind CSS（外部引用，无需内嵌） */
+/* 注：index.html中已通过CDN引入Tailwind，此处仅配置自定义样式 */
+
+/* Tailwind配置（提取为外部JS，命名为tailwind.config.js） */
+// tailwind.config.js内容如下：
+// tailwind.config = {
+//     theme: {
+//         extend: {
+//             colors: {
+//                 primary: '#2563eb',
+//                 secondary: '#475569',
+//                 light: '#f8fafc',
+//             },
+//             fontFamily: {
+//                 sans: ['Inter', 'system-ui', 'sans-serif'],
+//             },
+//         }
+//     }
+// }
+
+/* 自定义工具类样式 */
+@layer utilities {
+    .content-auto {
+        content-visibility: auto;
+    }
+    .resume-card {
+        @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300;
+    }
+    .section-title {
+        @apply text-2xl font-bold text-primary border-b-2 border-primary pb-2 mb-4;
+    }
+    .item-title {
+        @apply font-bold text-lg text-secondary;
+    }
+    .item-subtitle {
+        @apply text-sm text-gray-500 italic;
+    }
+    .editable {
+        @apply cursor-text focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-1;
+    }
+}

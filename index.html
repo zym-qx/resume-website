@@ -4,48 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>可编辑个人简历 - 我的简历</title>
+<!-- 引用外部Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引用外部Tailwind配置文件 -->
+    <script src="tailwind.config.js"></script>
+    <!-- 引用外部图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#2563eb',
-                        secondary: '#475569',
-                        light: '#f8fafc',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .content-auto {
-                content-visibility: auto;
-            }
-            .resume-card {
-                @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300;
-            }
-            .section-title {
-                @apply text-2xl font-bold text-primary border-b-2 border-primary pb-2 mb-4;
-            }
-            .item-title {
-                @apply font-bold text-lg text-secondary;
-            }
-            .item-subtitle {
-                @apply text-sm text-gray-500 italic;
-            }
-            .editable {
-                @apply cursor-text focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-1;
-            }
-        }
-    </style>
+    <!-- 引用外部自定义样式文件 -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引用外部目录配置文件（核心：实现目录嵌入化、灵活调整） -->
+    <script src="resume-menu.js"></script>
 </head>
 <body class="bg-light min-h-screen font-sans">
     <!-- 顶部导航栏 -->
@@ -60,30 +28,14 @@
             <button id="menuBtn" class="md:hidden text-2xl">
                 <i class="fas fa-bars"></i>
             </button>
-            <!-- 桌面端导航 -->
-            <ul class="hidden md:flex space-x-6">
-                <li><a href="#profile" class="hover:text-gray-200 transition-colors">个人信息</a></li>
-                <li><a href="#experience" class="hover:text-gray-200 transition-colors">工作经历</a></li>
-                <li><a href="#project" class="hover:text-gray-200 transition-colors">项目经历</a></li>
-                <li><a href="#education" class="hover:text-gray-200 transition-colors">教育背景</a></li>
-                <li><a href="#certificate" class="hover:text-gray-200 transition-colors">证书荣誉</a></li>
-                <li><a href="#skills" class="hover:text-gray-200 transition-colors">技能专长</a></li>
-                <li><a href="#language" class="hover:text-gray-200 transition-colors">语言能力</a></li>
-                <li><a href="#self-evaluation" class="hover:text-gray-200 transition-colors">自我评价</a></li>
-                <li><a href="#contact" class="hover:text-gray-200 transition-colors">联系方式</a></li>
+            <!-- 桌面端导航（通过JS动态渲染，引用外部目录配置） -->
+            <ul id="desktopMenu" class="hidden md:flex space-x-6">
+                <!-- 动态渲染内容，由resume-menu.js控制 -->
             </ul>
         </div>
-        <!-- 移动端导航菜单 -->
+        <!-- 移动端导航菜单（通过JS动态渲染，引用外部目录配置） -->
         <ul id="mobileMenu" class="hidden md:hidden bg-primary text-white px-4 py-2">
-            <li><a href="#profile" class="block py-2 hover:text-gray-200">个人信息</a></li>
-            <li><a href="#experience" class="block py-2 hover:text-gray-200">工作经历</a></li>
-            <li><a href="#project" class="block py-2 hover:text-gray-200">项目经历</a></li>
-            <li><a href="#education" class="block py-2 hover:text-gray-200">教育背景</a></li>
-            <li><a href="#certificate" class="block py-2 hover:text-gray-200">证书荣誉</a></li>
-            <li><a href="#skills" class="block py-2 hover:text-gray-200">技能专长</a></li>
-            <li><a href="#language" class="block py-2 hover:text-gray-200">语言能力</a></li>
-            <li><a href="#self-evaluation" class="block py-2 hover:text-gray-200">自我评价</a></li>
-            <li><a href="#contact" class="block py-2 hover:text-gray-200">联系方式</a></li>
+            <!-- 动态渲染内容，由resume-menu.js控制 -->
         </ul>
     </nav>
 
@@ -373,8 +325,66 @@
         </div>
     </footer>
 
-    <!-- JavaScript交互逻辑 -->
+    <!-- JavaScript交互逻辑（新增目录渲染逻辑，其余不变） -->
     <script>
+        // ========== 新增：目录（导航菜单）动态渲染逻辑 ==========
+        // 渲染导航菜单（桌面端+移动端），读取外部resume-menu.js配置
+        function renderMenu() {
+            const desktopMenu = document.getElementById('desktopMenu');
+            const mobileMenu = document.getElementById('mobileMenu');
+            // 清空原有菜单（避免重复渲染）
+            desktopMenu.innerHTML = '';
+            mobileMenu.innerHTML = '';
+            
+            // 遍历外部配置的目录，动态生成菜单
+            resumeMenu.forEach(menuItem => {
+                // 只渲染show为true的目录
+                if (menuItem.show) {
+                    // 桌面端菜单项
+                    const desktopLi = document.createElement('li');
+                    desktopLi.innerHTML = `<a href="#${menuItem.id}" class="hover:text-gray-200 transition-colors">${menuItem.name}</a>`;
+                    desktopMenu.appendChild(desktopLi);
+                    
+                    // 移动端菜单项
+                    const mobileLi = document.createElement('li');
+                    mobileLi.innerHTML = `<a href="#${menuItem.id}" class="block py-2 hover:text-gray-200">${menuItem.name}</a>`;
+                    mobileMenu.appendChild(mobileLi);
+                }
+            });
+        }
+
+        // 页面加载时，先渲染目录
+        window.addEventListener('load', () => {
+            renderMenu(); // 渲染导航菜单
+            // 原有加载逻辑（恢复数据、技能进度条）不变
+            const savedData = JSON.parse(loadData('all_data') || '{}');
+            
+            // 恢复头像
+            if (savedData.avatar) {
+                avatarImg.src = savedData.avatar;
+            }
+            
+            // 恢复文本内容
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            editableElements.forEach((el, index) => {
+                const id = el.id || `element_${index}`;
+                if (savedData[id]) {
+                    el.innerHTML = savedData[id];
+                }
+            });
+
+            // 重新计算技能进度条
+            document.querySelectorAll('.skill-percent').forEach(percentEl => {
+                const percentText = percentEl.textContent.trim().replace('%', '');
+                const percent = parseInt(percentText);
+                if (!isNaN(percent) && percent >= 0 && percent <= 100) {
+                    const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
+                    skillBar.style.width = `${percent}%`;
+                }
+            });
+        });
+
+        // ========== 原有交互逻辑（不变） ==========
         // 移动端菜单切换
         const menuBtn = document.getElementById('menuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -422,7 +432,7 @@
             }
         });
 
-        // ========== 可编辑功能核心逻辑 ==========
+        // 可编辑功能核心逻辑
         // 1. 头像上传功能
         const avatarInput = document.getElementById('avatarInput');
         const avatarImg = document.getElementById('avatarImg');
@@ -558,7 +568,7 @@
             languageContainer.insertBefore(newLanguage, addLanguageBtn);
         });
 
-        // ========== 数据保存/加载功能 ==========
+        // 数据保存/加载功能
         // 保存数据到本地存储
         function saveData(key, value) {
             localStorage.setItem(`resume_${key}`, value);
@@ -589,35 +599,6 @@
             
             // 提示保存成功
             alert('简历保存成功！刷新页面后内容不会丢失，可直接上传Git部署～');
-        });
-
-        // 页面加载时恢复数据
-        window.addEventListener('load', () => {
-            const savedData = JSON.parse(loadData('all_data') || '{}');
-            
-            // 恢复头像
-            if (savedData.avatar) {
-                avatarImg.src = savedData.avatar;
-            }
-            
-            // 恢复文本内容
-            const editableElements = document.querySelectorAll('[contenteditable="true"]');
-            editableElements.forEach((el, index) => {
-                const id = el.id || `element_${index}`;
-                if (savedData[id]) {
-                    el.innerHTML = savedData[id];
-                }
-            });
-
-            // 重新计算技能进度条
-            document.querySelectorAll('.skill-percent').forEach(percentEl => {
-                const percentText = percentEl.textContent.trim().replace('%', '');
-                const percent = parseInt(percentText);
-                if (!isNaN(percent) && percent >= 0 && percent <= 100) {
-                    const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
-                    skillBar.style.width = `${percent}%`;
-                }
-            });
         });
     </script>
 </body>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>可编辑个人简历 - 我的简历</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#475569',
+                        light: '#f8fafc',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .resume-card {
+                @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300;
+            }
+            .section-title {
+                @apply text-2xl font-bold text-primary border-b-2 border-primary pb-2 mb-4;
+            }
+            .item-title {
+                @apply font-bold text-lg text-secondary;
+            }
+            .item-subtitle {
+                @apply text-sm text-gray-500 italic;
+            }
+            .editable {
+                @apply cursor-text focus:outline-none focus:ring-2 focus:ring-primary/50 rounded px-1;
+            }
+        }
+    </style>
+</head>
+<body class="bg-light min-h-screen font-sans">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-primary text-white shadow-md sticky top-0 z-10">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold">可编辑个人简历</h1>
+            <!-- 保存按钮 -->
+            <button id="saveBtn" class="bg-white text-primary px-4 py-1 rounded hover:bg-gray-100 transition-colors mr-2">
+                <i class="fas fa-save mr-1"></i> 保存简历
+            </button>
+            <!-- 移动端菜单按钮 -->
+            <button id="menuBtn" class="md:hidden text-2xl">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- 桌面端导航 -->
+            <ul class="hidden md:flex space-x-6">
+                <li><a href="#profile" class="hover:text-gray-200 transition-colors">个人信息</a></li>
+                <li><a href="#experience" class="hover:text-gray-200 transition-colors">工作经历</a></li>
+                <li><a href="#project" class="hover:text-gray-200 transition-colors">项目经历</a></li>
+                <li><a href="#education" class="hover:text-gray-200 transition-colors">教育背景</a></li>
+                <li><a href="#certificate" class="hover:text-gray-200 transition-colors">证书荣誉</a></li>
+                <li><a href="#skills" class="hover:text-gray-200 transition-colors">技能专长</a></li>
+                <li><a href="#language" class="hover:text-gray-200 transition-colors">语言能力</a></li>
+                <li><a href="#self-evaluation" class="hover:text-gray-200 transition-colors">自我评价</a></li>
+                <li><a href="#contact" class="hover:text-gray-200 transition-colors">联系方式</a></li>
+            </ul>
+        </div>
+        <!-- 移动端导航菜单 -->
+        <ul id="mobileMenu" class="hidden md:hidden bg-primary text-white px-4 py-2">
+            <li><a href="#profile" class="block py-2 hover:text-gray-200">个人信息</a></li>
+            <li><a href="#experience" class="block py-2 hover:text-gray-200">工作经历</a></li>
+            <li><a href="#project" class="block py-2 hover:text-gray-200">项目经历</a></li>
+            <li><a href="#education" class="block py-2 hover:text-gray-200">教育背景</a></li>
+            <li><a href="#certificate" class="block py-2 hover:text-gray-200">证书荣誉</a></li>
+            <li><a href="#skills" class="block py-2 hover:text-gray-200">技能专长</a></li>
+            <li><a href="#language" class="block py-2 hover:text-gray-200">语言能力</a></li>
+            <li><a href="#self-evaluation" class="block py-2 hover:text-gray-200">自我评价</a></li>
+            <li><a href="#contact" class="block py-2 hover:text-gray-200">联系方式</a></li>
+        </ul>
+    </nav>
+
+    <!-- 提示条 -->
+    <div class="bg-yellow-100 text-yellow-800 px-4 py-2 text-center">
+        <i class="fas fa-info-circle mr-1"></i> 点击任何文字即可直接编辑，修改后记得点击「保存简历」，上传Git即可生成专属网站
+    </div>
+
+    <!-- 主要内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 个人信息部分 -->
+        <section id="profile" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">个人信息</h2>
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+                <!-- 头像上传 -->
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary relative">
+                    <img id="avatarImg" src="https://picsum.photos/200/200" alt="个人头像" class="w-full h-full object-cover">
+                    <input type="file" id="avatarInput" accept="image/*" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1">
+                        点击更换头像
+                    </div>
+                </div>
+                <!-- 基本信息 -->
+                <div class="flex-1">
+                    <h3 class="text-3xl font-bold text-secondary mb-2 editable" contenteditable="true">张三</h3>
+                    <p class="text-lg text-gray-600 mb-4 editable" contenteditable="true">前端开发工程师 | 5年工作经验</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-birthday-cake text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">1990年10月</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-flag text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">中国 · 北京</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-envelope text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">zhangsan@example.com</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-phone text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">13800138000</span>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-700 editable" contenteditable="true">
+                        具备丰富的前端开发经验，精通HTML/CSS/JavaScript，熟练使用React、Vue等框架，
+                        注重用户体验和代码质量，擅长解决复杂的前端交互问题。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 工作经历部分 -->
+        <section id="experience" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">工作经历</h2>
+            <div class="space-y-6">
+                <!-- 工作经历1 -->
+                <div class="border-l-4 border-primary pl-4">
+                    <h3 class="item-title editable" contenteditable="true">前端开发高级工程师</h3>
+                    <p class="item-subtitle editable" contenteditable="true">XX科技有限公司 | 2020.03 - 至今</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">负责公司核心产品的前端架构设计和开发，优化页面加载速度30%+</li>
+                        <li class="editable" contenteditable="true">主导React组件库的建设，提升团队开发效率50%+</li>
+                        <li class="editable" contenteditable="true">参与跨端方案落地，实现一套代码多端运行（Web/小程序/APP）</li>
+                        <li class="editable" contenteditable="true">指导初级开发工程师，提升团队整体技术水平</li>
+                    </ul>
+                </div>
+                <!-- 工作经历2 -->
+                <div class="border-l-4 border-primary pl-4">
+                    <h3 class="item-title editable" contenteditable="true">前端开发工程师</h3>
+                    <p class="item-subtitle editable" contenteditable="true">XX互联网公司 | 2018.01 - 2020.02</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">负责电商平台前端页面开发和维护，保障页面兼容性和稳定性</li>
+                        <li class="editable" contenteditable="true">参与前端工程化改造，引入Webpack、ESLint等工具规范开发流程</li>
+                        <li class="editable" contenteditable="true">优化页面交互体验，提升用户留存率15%+</li>
+                    </ul>
+                </div>
+                <!-- 添加工作经历按钮 -->
+                <button id="addExperienceBtn" class="text-primary hover:text-primary/80 flex items-center">
+                    <i class="fas fa-plus mr-1"></i> 添加工作经历
+                </button>
+            </div>
+        </section>
+
+        <!-- 项目经历部分 -->
+        <section id="project" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">项目经历</h2>
+            <div class="space-y-6">
+                <!-- 项目经历1 -->
+                <div class="border-l-4 border-primary pl-4">
+                    <h3 class="item-title editable" contenteditable="true">企业管理系统前端开发</h3>
+                    <p class="item-subtitle editable" contenteditable="true">项目负责人 | 2021.06 - 2022.01 | 团队规模：5人</p>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">项目描述：为大型企业开发的内部管理系统，涵盖员工管理、数据统计、权限分配等核心功能，支持多角色登录和个性化配置。</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">使用React + Ant Design构建前端页面，封装10+通用组件，提升开发复用率</li>
+                        <li class="editable" contenteditable="true">对接后端API接口，实现数据实时同步，优化接口请求速度，减少加载延迟</li>
+                        <li class="editable" contenteditable="true">负责权限模块开发，实现基于角色的权限控制（RBAC），保障系统数据安全</li>
+                        <li class="editable" contenteditable="true">项目上线后，帮助企业提升管理效率40%，获得客户高度认可</li>
+                    </ul>
+                </div>
+                <!-- 项目经历2 -->
+                <div class="border-l-4 border-primary pl-4">
+                    <h3 class="item-title editable" contenteditable="true">电商小程序开发</h3>
+                    <p class="item-subtitle editable" contenteditable="true">核心开发 | 2020.08 - 2020.12 | 团队规模：3人</p>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">项目描述：基于微信小程序开发的电商平台，支持商品浏览、加入购物车、下单支付、物流查询等功能，适配不同手机型号。</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">使用微信原生小程序框架开发，优化页面渲染性能，减少卡顿问题</li>
+                        <li class="editable" contenteditable="true">实现商品搜索、筛选、排序功能，提升用户查找效率</li>
+                        <li class="editable" contenteditable="true">对接微信支付接口，完成支付流程开发，保障交易安全稳定</li>
+                    </ul>
+                </div>
+                <!-- 添加项目经历按钮 -->
+                <button id="addProjectBtn" class="text-primary hover:text-primary/80 flex items-center">
+                    <i class="fas fa-plus mr-1"></i> 添加项目经历
+                </button>
+            </div>
+        </section>
+
+        <!-- 教育背景部分 -->
+        <section id="education" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">教育背景</h2>
+            <div class="space-y-6">
+                <div class="border-l-4 border-primary pl-4">
+                    <h3 class="item-title editable" contenteditable="true">计算机科学与技术 | 本科</h3>
+                    <p class="item-subtitle editable" contenteditable="true">XX大学 | 2014.09 - 2018.06</p>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">GPA：3.8/4.0 | 专业排名：前5% | 获得校级一等奖学金3次</p>
+                </div>
+                <!-- 添加教育背景按钮 -->
+                <button id="addEducationBtn" class="text-primary hover:text-primary/80 flex items-center">
+                    <i class="fas fa-plus mr-1"></i> 添加教育背景
+                </button>
+            </div>
+        </section>
+
+        <!-- 证书荣誉部分 -->
+        <section id="certificate" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">证书荣誉</h2>
+            <div class="space-y-4">
+                <div class="flex flex-col md:flex-row md:items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <i class="fas fa-certificate text-primary text-xl md:w-8 text-center"></i>
+                    <div class="flex-1">
+                        <h3 class="item-title editable" contenteditable="true">计算机二级证书（C语言）</h3>
+                        <p class="item-subtitle editable" contenteditable="true">2016年06月 | 国家计算机等级考试中心颁发</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <i class="fas fa-certificate text-primary text-xl md:w-8 text-center"></i>
+                    <div class="flex-1">
+                        <h3 class="item-title editable" contenteditable="true">前端高级开发工程师证书</h3>
+                        <p class="item-subtitle editable" contenteditable="true">2021年10月 | 工业和信息化部颁发</p>
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row md:items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <i class="fas fa-award text-primary text-xl md:w-8 text-center"></i>
+                    <div class="flex-1">
+                        <h3 class="item-title editable" contenteditable="true">公司年度优秀员工</h3>
+                        <p class="item-subtitle editable" contenteditable="true">2022年12月 | XX科技有限公司颁发</p>
+                    </div>
+                </div>
+                <!-- 添加证书荣誉按钮 -->
+                <button id="addCertificateBtn" class="text-primary hover:text-primary/80 flex items-center">
+                    <i class="fas fa-plus mr-1"></i> 添加证书/荣誉
+                </button>
+            </div>
+        </section>
+
+        <!-- 技能专长部分 -->
+        <section id="skills" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">技能专长</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 技术技能 -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 text-secondary editable" contenteditable="true">技术技能</h3>
+                    <div class="space-y-3" id="skillsList">
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="editable" contenteditable="true">HTML/CSS/JavaScript</span>
+                                <span class="skill-percent editable" contenteditable="true">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full skill-bar" style="width: 95%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="editable" contenteditable="true">React/Vue</span>
+                                <span class="skill-percent editable" contenteditable="true">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full skill-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="flex justify-between mb-1">
+                                <span class="editable" contenteditable="true">Node.js</span>
+                                <span class="skill-percent editable" contenteditable="true">75%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary h-2 rounded-full skill-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 添加技能按钮 -->
+                    <button id="addSkillBtn" class="mt-3 text-primary hover:text-primary/80 flex items-center">
+                        <i class="fas fa-plus mr-1"></i> 添加技能
+                    </button>
+                </div>
+                <!-- 软技能 -->
+                <div>
+                    <h3 class="font-bold text-lg mb-3 text-secondary editable" contenteditable="true">软技能</h3>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2" id="softSkillsList">
+                        <li class="editable" contenteditable="true">良好的沟通能力和团队协作精神</li>
+                        <li class="editable" contenteditable="true">较强的问题分析和解决能力</li>
+                        <li class="editable" contenteditable="true">持续学习新技术，具备快速上手能力</li>
+                        <li class="editable" contenteditable="true">注重代码规范和文档编写</li>
+                        <li class="editable" contenteditable="true">英语CET-6，能阅读英文技术文档</li>
+                    </ul>
+                    <!-- 添加软技能按钮 -->
+                    <button id="addSoftSkillBtn" class="mt-3 text-primary hover:text-primary/80 flex items-center">
+                        <i class="fas fa-plus mr-1"></i> 添加软技能
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 语言能力部分 -->
+        <section id="language" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">语言能力</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors">
+                    <h3 class="item-title editable" contenteditable="true">普通话</h3>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">标准 | 二级甲等 | 流利沟通、无障碍表达</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors">
+                    <h3 class="item-title editable" contenteditable="true">英语</h3>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">CET-6 | 听说读写流利 | 能阅读英文技术文档、进行简单口语交流</p>
+                </div>
+                <div class="border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors">
+                    <h3 class="item-title editable" contenteditable="true">日语</h3>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">N3 | 基础沟通 | 能看懂简单日文资料、进行日常对话</p>
+                </div>
+            </div>
+            <!-- 添加语言能力按钮 -->
+            <button id="addLanguageBtn" class="mt-4 text-primary hover:text-primary/80 flex items-center">
+                <i class="fas fa-plus mr-1"></i> 添加语言能力
+            </button>
+        </section>
+
+        <!-- 自我评价部分 -->
+        <section id="self-evaluation" class="resume-card mb-8">
+            <h2 class="section-title editable" contenteditable="true">自我评价</h2>
+            <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+                <p class="text-gray-700 editable" contenteditable="true">
+                    5年前端开发经验，熟悉前端开发全流程，具备从需求分析、架构设计到项目落地的完整能力。精通各类前端技术栈，
+                    善于结合业务场景优化技术方案，提升产品体验和开发效率。工作认真负责，注重细节，具备良好的团队协作意识和沟通能力，
+                    能够快速适应新环境、新技术，始终保持学习热情，致力于通过技术为业务创造价值。对待工作严谨细致，善于总结经验，
+                    能够高效解决开发过程中遇到的各类问题，具备较强的抗压能力和执行力。
+                </p>
+            </div>
+        </section>
+
+        <!-- 联系方式部分 -->
+        <section id="contact" class="resume-card">
+            <h2 class="section-title editable" contenteditable="true">联系方式</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-center">
+                <a href="tel:13800138000" class="flex flex-col items-center p-4 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-phone text-2xl text-primary mb-2"></i>
+                    <span class="editable" contenteditable="true">13800138000</span>
+                </a>
+                <a href="mailto:zhangsan@example.com" class="flex flex-col items-center p-4 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-envelope text-2xl text-primary mb-2"></i>
+                    <span class="editable" contenteditable="true">zhangsan@example.com</span>
+                </a>
+                <a href="https://github.com/zhangsan" target="_blank" class="flex flex-col items-center p-4 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fab fa-github text-2xl text-primary mb-2"></i>
+                    <span class="editable" contenteditable="true">github.com/zhangsan</span>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="bg-secondary text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="editable" contenteditable="true">© 2026 张三 - 个人简历 | 所有权利保留</p>
+            <p class="text-sm mt-2 text-gray-300">使用HTML + Tailwind CSS构建 | 可在线编辑 | 免费Git部署</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript交互逻辑 -->
+    <script>
+        // 移动端菜单切换
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuBtn.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                        menuBtn.querySelector('i').classList.replace('fa-times', 'fa-bars');
+                    }
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 70,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 滚动时导航栏样式变化
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('py-2');
+                nav.classList.remove('py-3');
+            } else {
+                nav.classList.add('py-3');
+                nav.classList.remove('py-2');
+            }
+        });
+
+        // ========== 可编辑功能核心逻辑 ==========
+        // 1. 头像上传功能
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarImg = document.getElementById('avatarImg');
+        
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    avatarImg.src = event.target.result;
+                    saveData('avatar', event.target.result); // 保存头像
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // 2. 技能进度条实时更新
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('skill-percent')) {
+                const percentText = e.target.textContent.trim().replace('%', '');
+                const percent = parseInt(percentText);
+                if (!isNaN(percent) && percent >= 0 && percent <= 100) {
+                    const skillBar = e.target.closest('.skill-item').querySelector('.skill-bar');
+                    skillBar.style.width = `${percent}%`;
+                }
+            }
+        });
+
+        // 3. 添加新的工作经历
+        const addExperienceBtn = document.getElementById('addExperienceBtn');
+        addExperienceBtn.addEventListener('click', () => {
+            const experienceContainer = addExperienceBtn.parentElement;
+            const newExperience = document.createElement('div');
+            newExperience.className = 'border-l-4 border-primary pl-4 mt-4';
+            newExperience.innerHTML = `
+                <h3 class="item-title editable" contenteditable="true">新的工作职位</h3>
+                <p class="item-subtitle editable" contenteditable="true">公司名称 | 入职时间 - 离职时间</p>
+                <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                    <li class="editable" contenteditable="true">工作内容1</li>
+                    <li class="editable" contenteditable="true">工作内容2</li>
+                </ul>
+            `;
+            experienceContainer.insertBefore(newExperience, addExperienceBtn);
+        });
+
+        // 4. 添加新的教育背景
+        const addEducationBtn = document.getElementById('addEducationBtn');
+        addEducationBtn.addEventListener('click', () => {
+            const educationContainer = addEducationBtn.parentElement;
+            const newEducation = document.createElement('div');
+            newEducation.className = 'border-l-4 border-primary pl-4 mt-4';
+            newEducation.innerHTML = `
+                <h3 class="item-title editable" contenteditable="true">专业名称 | 学历</h3>
+                <p class="item-subtitle editable" contenteditable="true">学校名称 | 入学时间 - 毕业时间</p>
+                <p class="mt-2 text-gray-700 editable" contenteditable="true">相关荣誉/成绩</p>
+            `;
+            educationContainer.insertBefore(newEducation, addEducationBtn);
+        });
+
+        // 5. 添加新的技术技能
+        const addSkillBtn = document.getElementById('addSkillBtn');
+        addSkillBtn.addEventListener('click', () => {
+            const skillsList = document.getElementById('skillsList');
+            const newSkill = document.createElement('div');
+            newSkill.className = 'skill-item mt-3';
+            newSkill.innerHTML = `
+                <div class="flex justify-between mb-1">
+                    <span class="editable" contenteditable="true">新技能名称</span>
+                    <span class="skill-percent editable" contenteditable="true">80%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-primary h-2 rounded-full skill-bar" style="width: 80%"></div>
+                </div>
+            `;
+            skillsList.appendChild(newSkill);
+        });
+
+        // 6. 添加新的软技能
+        const addSoftSkillBtn = document.getElementById('addSoftSkillBtn');
+        addSoftSkillBtn.addEventListener('click', () => {
+            const softSkillsList = document.getElementById('softSkillsList');
+            const newSoftSkill = document.createElement('li');
+            newSoftSkill.className = 'editable mt-2';
+            newSoftSkill.contentEditable = true;
+            newSoftSkill.textContent = '新的软技能';
+            softSkillsList.appendChild(newSoftSkill);
+        });
+
+        // 7. 添加新项目经历
+        const addProjectBtn = document.getElementById('addProjectBtn');
+        addProjectBtn.addEventListener('click', () => {
+            const projectContainer = addProjectBtn.parentElement;
+            const newProject = document.createElement('div');
+            newProject.className = 'border-l-4 border-primary pl-4 mt-4';
+            newProject.innerHTML = `
+                <h3 class="item-title editable" contenteditable="true">新项目名称</h3>
+                <p class="item-subtitle editable" contenteditable="true">角色 | 项目周期 | 团队规模</p>
+                <p class="mt-2 text-gray-700 editable" contenteditable="true">项目描述：简要描述项目背景、核心功能和目标</p>
+                <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                    <li class="editable" contenteditable="true">负责内容1</li>
+                    <li class="editable" contenteditable="true">负责内容2</li>
+                </ul>
+            `;
+            projectContainer.insertBefore(newProject, addProjectBtn);
+        });
+
+        // 8. 添加新证书/荣誉
+        const addCertificateBtn = document.getElementById('addCertificateBtn');
+        addCertificateBtn.addEventListener('click', () => {
+            const certificateContainer = addCertificateBtn.parentElement;
+            const newCertificate = document.createElement('div');
+            newCertificate.className = 'flex flex-col md:flex-row md:items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors mt-3';
+            newCertificate.innerHTML = `
+                <i class="fas fa-certificate text-primary text-xl md:w-8 text-center"></i>
+                <div class="flex-1">
+                    <h3 class="item-title editable" contenteditable="true">新证书/荣誉名称</h3>
+                    <p class="item-subtitle editable" contenteditable="true">获得时间 | 颁发机构</p>
+                </div>
+            `;
+            certificateContainer.insertBefore(newCertificate, addCertificateBtn);
+        });
+
+        // 9. 添加新语言能力
+        const addLanguageBtn = document.getElementById('addLanguageBtn');
+        addLanguageBtn.addEventListener('click', () => {
+            const languageContainer = addLanguageBtn.parentElement;
+            const newLanguage = document.createElement('div');
+            newLanguage.className = 'border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors mt-4';
+            newLanguage.innerHTML = `
+                <h3 class="item-title editable" contenteditable="true">新语言</h3>
+                <p class="mt-2 text-gray-700 editable" contenteditable="true">等级 | 熟练程度 | 具体描述</p>
+            `;
+            languageContainer.insertBefore(newLanguage, addLanguageBtn);
+        });
+
+        // ========== 数据保存/加载功能 ==========
+        // 保存数据到本地存储
+        function saveData(key, value) {
+            localStorage.setItem(`resume_${key}`, value);
+        }
+
+        // 从本地存储加载数据
+        function loadData(key) {
+            return localStorage.getItem(`resume_${key}`);
+        }
+
+        // 保存整个简历内容
+        const saveBtn = document.getElementById('saveBtn');
+        saveBtn.addEventListener('click', () => {
+            // 保存所有文本内容
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            const resumeData = {};
+            
+            editableElements.forEach((el, index) => {
+                const id = el.id || `element_${index}`;
+                resumeData[id] = el.innerHTML;
+            });
+            
+            // 保存头像
+            resumeData.avatar = avatarImg.src;
+            
+            // 存储到本地
+            localStorage.setItem('resume_all_data', JSON.stringify(resumeData));
+            
+            // 提示保存成功
+            alert('简历保存成功！刷新页面后内容不会丢失，可直接上传Git部署～');
+        });
+
+        // 页面加载时恢复数据
+        window.addEventListener('load', () => {
+            const savedData = JSON.parse(loadData('all_data') || '{}');
+            
+            // 恢复头像
+            if (savedData.avatar) {
+                avatarImg.src = savedData.avatar;
+            }
+            
+            // 恢复文本内容
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            editableElements.forEach((el, index) => {
+                const id = el.id || `element_${index}`;
+                if (savedData[id]) {
+                    el.innerHTML = savedData[id];
+                }
+            });
+
+            // 重新计算技能进度条
+            document.querySelectorAll('.skill-percent').forEach(percentEl => {
+                const percentText = percentEl.textContent.trim().replace('%', '');
+                const percent = parseInt(percentText);
+                if (!isNaN(percent) && percent >= 0 && percent <= 100) {
+                    const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
+                    skillBar.style.width = `${percent}%`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

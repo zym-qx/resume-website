@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>可编辑个人简历 - 我的简历</title>
+    <title>可编辑个人简历 - 我的简历&lt;/title&gt;
 <!-- 引用外部Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引用外部Tailwind配置文件 -->
@@ -12,18 +12,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- 引用外部自定义基础样式文件 -->
     <link rel="stylesheet" href="style.css">
-    <!-- 引用外部多样式配置文件（15种风格切换） -->
+    <!-- 引用外部多样式配置文件（12种风格切换） -->
     <link rel="stylesheet" href="style-multiple.css">
     <!-- 引用外部目录配置文件（核心：实现目录可视化操作） -->
     <script src="resume-menu.js"></script>
 </head>
 <body class="bg-light min-h-screen font-sans style-simple" id="resumeBody">
-    <!-- 顶部导航栏（15款样式切换、只读模式按钮、新增目录按钮） -->
+    <!-- 顶部导航栏（12款样式切换、只读模式按钮、新增目录按钮） -->
     <nav class="bg-primary text-white shadow-md sticky top-0 z-10">
         <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
             <h1 class="text-xl font-bold">可编辑个人简历</h1>
             <div class="flex items-center gap-2 mb-2 md:mb-0">
-                <!-- 样式切换按钮（15款样式选项） -->
+                <!-- 样式切换按钮（12款样式选项） -->
                 <select id="styleSelect" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-100 transition-colors text-sm">
                     <option value="style-simple">简约风（默认）</option>
                     <option value="style-business">商务风</option>
@@ -31,9 +31,6 @@
                     <option value="style-vintage">复古风</option>
                     <option value="style-minimal">极简风</option>
                     <option value="style-tech">科技风</option>
-                    <option value="style-forest">森系风</option>
-                    <option value="style-ins">ins风</option>
-                    <option value="style-dark">暗黑风</option>
                     <option value="style-morandi">莫兰迪风</option>
                     <option value="style-japanese">日系风</option>
                     <option value="style-industrial">工业风</option>
@@ -71,7 +68,7 @@
 
     <!-- 提示条（新增目录操作、媒体插入提示） -->
     <div class="bg-yellow-100 text-yellow-800 px-4 py-2 text-center">
-        <i class="fas fa-info-circle mr-1"></i> 点击任何文字即可直接编辑，修改后记得点击「保存简历」；保存后可生成只读网址（需部署到Git Pages），供面试官查看 | 样式可通过顶部下拉框切换（共15款）| 目录可点击「隐藏」「删除」图标操作，点击「新增目录」添加板块 | 工作经历、项目经历可插入效果图、短视频，支持拖拽排版和尺寸调整
+        <i class="fas fa-info-circle mr-1"></i> 点击任何文字即可直接编辑，修改后记得点击「保存简历」；保存后可生成只读网址（需部署到Git Pages），供面试官查看 | 样式可通过顶部下拉框切换（共12款）| 目录可点击「隐藏」「删除」图标操作，点击「新增目录」添加板块 | 工作经历、项目经历可插入效果图、短视频，支持拖拽排版和尺寸调整
     </div>
 
     <!-- 只读网址展示区（完善：确保生成可访问链接，新增复制成功提示、部署指引） -->
@@ -116,6 +113,38 @@
         </div>
     </div>
 
+    <!-- 媒体插入弹窗（默认隐藏，点击插入媒体按钮显示） -->
+    <div id="mediaModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <h3 class="text-xl font-bold text-primary mb-4">插入效果图/短视频</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-gray-700 mb-1">选择媒体类型</label>
+                    <select id="mediaType" class="w-full p-2 border border-gray-300 rounded">
+                        <option value="image">效果图（图片）</option>
+                        <option value="video">短视频</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1">上传媒体文件</label>
+                    <input type="file" id="mediaFile" accept="image/*,video/*" class="w-full p-2 border border-gray-300 rounded" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 mb-1">媒体尺寸</label>
+                    <select id="mediaSize" class="w-full p-2 border border-gray-300 rounded">
+                        <option value="media-sm">小（1/4宽度）</option>
+                        <option value="media-md">中（1/3宽度）</option>
+                        <option value="media-lg">大（1/2宽度）</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2">
+                    <button id="cancelMedia" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors">取消</button>
+                    <button id="confirmMedia" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">确认插入</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 主要内容区（新增媒体插入、目录联动功能，适配工作经历、项目经历） -->
     <main class="container mx-auto px-4 py-8" id="resumeMain">
         <!-- 个人信息部分 -->
@@ -141,11 +170,11 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-flag text-primary w-5 text-center"></i>
-                            <span class="editable" contenteditable="true">1990年10月</span>
+                            <span class="editable" contenteditable="true">中国 | 北京</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-flag text-primary w-5 text-center"></i>
-                            <span class="editable" contenteditable="true">中国 · 北京</span>
+                            <i class="fas fa-phone text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">13800138000</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-envelope text-primary w-5 text-center"></i>

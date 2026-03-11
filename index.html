@@ -3,174 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>可编辑个人简历 - 我的简历&lt;/title&gt;
-<!-- 引用外部Tailwind CSS CDN -->
+    <title>多人版简历模板 | 可在线编辑</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引用外部Tailwind配置文件 -->
-    <script src="tailwind.config.js"></script>
-    <!-- 引用外部图标库 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- 引用外部自定义基础样式文件 -->
+    <!-- Font Awesome 图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 自定义样式 -->
     <link rel="stylesheet" href="style.css">
-    <!-- 引用外部多样式配置文件（12种风格切换） -->
     <link rel="stylesheet" href="style-multiple.css">
-    <!-- 引用外部目录配置文件（核心：实现目录可视化操作） -->
+    <!-- Tailwind 配置文件 -->
+    <script src="tailwind.config.js"></script>
+    <!-- 简历菜单配置 -->
     <script src="resume-menu.js"></script>
 </head>
-<body class="bg-light min-h-screen font-sans style-simple" id="resumeBody">
-    <!-- 顶部导航栏（12款样式切换、只读模式按钮、新增目录按钮） -->
-    <nav class="bg-primary text-white shadow-md sticky top-0 z-10">
-        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
-            <h1 class="text-xl font-bold">可编辑个人简历</h1>
-            <div class="flex items-center gap-2 mb-2 md:mb-0">
-                <!-- 样式切换按钮（12款样式选项） -->
-                <select id="styleSelect" class="bg-white text-primary px-2 py-1 rounded hover:bg-gray-100 transition-colors text-sm">
-                    <option value="style-simple">简约风（默认）</option>
-                    <option value="style-business">商务风</option>
-                    <option value="style-fresh">清新风</option>
-                    <option value="style-vintage">复古风</option>
-                    <option value="style-minimal">极简风</option>
-                    <option value="style-tech">科技风</option>
-                    <option value="style-morandi">莫兰迪风</option>
-                    <option value="style-japanese">日系风</option>
-                    <option value="style-industrial">工业风</option>
-                    <option value="style-gentle">温柔风</option>
-                    <option value="style-hongkong">复古港风</option>
-                    <option value="style-blackwhite">极简黑白风</option>
-                </select>
-                <!-- 新增目录按钮 -->
-                <button id="addMenuBtn" class="bg-white text-primary px-4 py-1 rounded hover:bg-gray-100 transition-colors mr-2">
-                    <i class="fas fa-folder-plus mr-1"></i> 新增目录
-                </button>
-                <!-- 只读模式按钮 -->
-                <button id="readOnlyBtn" class="bg-white text-primary px-4 py-1 rounded hover:bg-gray-100 transition-colors mr-2">
-                    <i class="fas fa-eye mr-1"></i> 只读模式
-                </button>
-                <!-- 保存按钮 -->
-                <button id="saveBtn" class="bg-white text-primary px-4 py-1 rounded hover:bg-gray-100 transition-colors mr-2">
-                    <i class="fas fa-save mr-1"></i> 保存简历
-                </button>
-                <!-- 移动端菜单按钮 -->
-                <button id="menuBtn" class="md:hidden text-2xl">
-                    <i class="fas fa-bars"></i>
-                </button>
+<body id="resumeBody" class="style-simple bg-gray-100 font-sans text-gray-800">
+    <!-- 顶部导航栏（新增用户操作面板） -->
+    <nav class="bg-primary text-white shadow-md sticky top-0 z-20">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-bold">多人版简历模板</div>
+                
+                <!-- 右侧功能区：用户切换 + 样式切换 + 只读模式 -->
+                <div class="flex items-center gap-4">
+                    <!-- 1. 用户管理面板 -->
+                    <div class="relative">
+                        <button id="userMenuBtn" class="flex items-center gap-2 hover:text-gray-200 transition-colors">
+                            <i class="fas fa-users"></i>
+                            <span id="currentUserName">默认用户</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <!-- 用户下拉菜单 -->
+                        <div id="userDropdown" class="absolute right-0 top-full mt-2 w-64 bg-white text-gray-800 rounded-lg shadow-lg py-2 hidden z-30">
+                            <!-- 用户列表 -->
+                            <div class="px-4 py-2 border-b border-gray-200">
+                                <h4 class="font-medium text-sm text-gray-600">选择用户</h4>
+                                <div id="userList" class="max-h-40 overflow-y-auto mt-2 space-y-1">
+                                    <!-- 动态生成用户列表 -->
+                                </div>
+                            </div>
+                            <!-- 用户操作按钮 -->
+                            <div class="px-4 py-2 space-y-2">
+                                <button id="addUserBtn" class="w-full text-left px-2 py-1 hover:bg-gray-100 rounded flex items-center gap-2">
+                                    <i class="fas fa-plus text-primary"></i> 新增用户
+                                </button>
+                                <button id="deleteUserBtn" class="w-full text-left px-2 py-1 hover:bg-gray-100 rounded flex items-center gap-2 text-red-500">
+                                    <i class="fas fa-trash"></i> 删除当前用户
+                                </button>
+                                <button id="resetUserBtn" class="w-full text-left px-2 py-1 hover:bg-gray-100 rounded flex items-center gap-2 text-orange-500">
+                                    <i class="fas fa-refresh"></i> 重置当前用户数据
+                                </button>
+                            </div>
+                            <!-- 数据导入导出 -->
+                            <div class="px-4 py-2 border-t border-gray-200 space-y-2">
+                                <button id="exportUserBtn" class="w-full text-left px-2 py-1 hover:bg-gray-100 rounded flex items-center gap-2">
+                                    <i class="fas fa-download text-green-500"></i> 导出当前用户数据
+                                </button>
+                                <label for="importUserFile" class="w-full text-left px-2 py-1 hover:bg-gray-100 rounded flex items-center gap-2 cursor-pointer">
+                                    <i class="fas fa-upload text-blue-500"></i> 导入用户数据
+                                    <input type="file" id="importUserFile" accept=".json" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. 样式切换下拉框 -->
+                    <select id="styleSelect" class="bg-primary/90 text-white border border-white/30 rounded px-2 py-1 hover:bg-primary transition-colors">
+                        <option value="style-simple">简约风</option>
+                        <option value="style-business">商务风</option>
+                        <option value="style-fresh">清新风</option>
+                        <option value="style-vintage">复古风</option>
+                        <option value="style-minimal">极简风</option>
+                        <option value="style-tech">科技风</option>
+                        <option value="style-forest">森系风</option>
+                        <option value="style-ins">ins风</option>
+                        <option value="style-dark">暗黑风</option>
+                    </select>
+
+                    <!-- 3. 只读模式切换 -->
+                    <button id="readOnlyToggle" class="bg-white/20 hover:bg-white/30 rounded px-2 py-1 transition-colors">
+                        开启只读模式
+                    </button>
+                </div>
             </div>
-            <!-- 桌面端导航（通过JS动态渲染，支持隐藏/新增/删除） -->
-            <ul id="desktopMenu" class="hidden md:flex space-x-6">
-                <!-- 动态渲染内容，由resume-menu.js控制，每个目录新增隐藏、删除图标 -->
+
+            <!-- 导航菜单（桌面端） -->
+            <ul id="desktopMenu" class="flex flex-wrap gap-2 py-2">
+                <!-- 动态渲染菜单 -->
             </ul>
         </div>
-        <!-- 移动端导航菜单（通过JS动态渲染，支持隐藏/新增/删除） -->
-        <ul id="mobileMenu" class="hidden md:hidden bg-primary text-white px-4 py-2">
-            <!-- 动态渲染内容，由resume-menu.js控制，每个目录新增隐藏、删除图标 -->
-        </ul>
+
+        <!-- 移动端导航菜单 -->
+        <div class="md:hidden bg-primary/90">
+            <ul id="mobileMenu" class="px-4 py-2 space-y-1">
+                <!-- 动态渲染菜单 -->
+            </ul>
+        </div>
     </nav>
-
-    <!-- 提示条（新增目录操作、媒体插入提示） -->
-    <div class="bg-yellow-100 text-yellow-800 px-4 py-2 text-center">
-        <i class="fas fa-info-circle mr-1"></i> 点击任何文字即可直接编辑，修改后记得点击「保存简历」；保存后可生成只读网址（需部署到Git Pages），供面试官查看 | 样式可通过顶部下拉框切换（共12款）| 目录可点击「隐藏」「删除」图标操作，点击「新增目录」添加板块 | 工作经历、项目经历可插入效果图、短视频，支持拖拽排版和尺寸调整
+	<!-- 新增功能操作栏 -->
+<div class="bg-white shadow-md sticky top-0 z-20 py-3 px-4">
+  <div class="container mx-auto flex flex-wrap gap-4 justify-between items-center">
+    <!-- 模板库入口 -->
+    <div>
+      <label class="mr-2 font-medium">模板库：</label>
+      <select id="templateSelect" class="px-2 py-1 border border-gray-200 rounded hover:border-primary">
+        <option value="">选择行业模板</option>
+        <option value="frontend">前端开发工程师</option>
+        <option value="product">产品经理</option>
+        <option value="designer">UI/UX设计师</option>
+      </select>
     </div>
-
-    <!-- 只读网址展示区（完善：确保生成可访问链接，新增复制成功提示、部署指引） -->
-    <div id="readOnlyUrlContainer" class="container mx-auto px-4 py-3 hidden">
-        <div class="bg-green-50 border border-green-200 rounded-lg p-3 flex flex-col md:flex-row items-center justify-between gap-2">
-            <p class="text-green-800"><i class="fas fa-link mr-1"></i> 面试官只读简历网址：</p>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <input type="text" id="readOnlyUrl" readonly class="flex-1 p-2 border border-green-300 rounded-lg text-sm" placeholder="保存简历后生成只读网址">
-                <button id="copyUrlBtn" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors text-sm">
-                    <i class="fas fa-copy mr-1"></i> 复制
-                </button>
-            </div>
-        </div>
-        <!-- 完善：只读网址部署指引（详细步骤，确保用户能成功部署） -->
-        <div class="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">
-            <i class="fas fa-lightbulb mr-1 text-yellow-500"></i> 部署指引（3步完成）：1. 将所有简历文件（index.html、style.css、style-multiple.css、tailwind.config.js、resume-menu.js）上传至GitHub仓库；2. 进入仓库设置，找到「GitHub Pages」，选择「main分支」并保存；3. 等待1-2分钟，将仓库地址（https://用户名.github.io/仓库名/）复制到上方输入框，即可生成可公开访问的只读简历链接（面试官点击即可查看，不可编辑）。
-        </div>
-        <!-- 新增：复制成功提示（默认隐藏） -->
-        <div id="copySuccess" class="mt-2 text-sm text-green-600 hidden">
-            <i class="fas fa-check mr-1"></i> 复制成功！可直接将链接发送给面试官。
-        </div>
+    
+    <!-- 头像上传 -->
+    <div>
+      <label for="avatarUpload" class="flex items-center text-primary hover:text-primary/80 cursor-pointer">
+        <i class="fas fa-user-circle mr-1"></i> 上传头像
+      </label>
+      <input type="file" id="avatarUpload" accept="image/*" class="hidden" />
+      <img id="avatarPreview" src="" alt="头像" class="w-10 h-10 rounded-full hidden object-cover ml-2" />
     </div>
-
-    <!-- 新增目录弹窗（默认隐藏，点击新增目录按钮显示） -->
-    <div id="addMenuModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 class="text-xl font-bold text-primary mb-4">新增目录及板块</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 mb-1">目录名称（如：项目成果、获奖经历）</label>
-                    <input type="text" id="menuName" class="w-full p-2 border border-gray-300 rounded" placeholder="请输入目录名称" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">目录标识（英文/数字，如：project-result，不可重复）</label>
-                    <input type="text" id="menuId" class="w-full p-2 border border-gray-300 rounded" placeholder="请输入目录标识（小写，无空格）" required>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button id="cancelAddMenu" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors">取消</button>
-                    <button id="confirmAddMenu" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">确认新增</button>
-                </div>
-            </div>
-        </div>
+    
+    <!-- PDF导出 -->
+    <button id="exportPdfBtn" class="px-3 py-1 bg-primary text-white rounded hover:bg-primary/80 flex items-center">
+      <i class="fas fa-file-pdf mr-1"></i> 导出PDF
+    </button>
+    
+    <!-- 分享功能 -->
+    <button id="shareBtn" class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center">
+      <i class="fas fa-share-alt mr-1"></i> 生成分享链接
+    </button>
+    
+    <!-- 原有样式切换 -->
+    <div>
+      <label class="mr-2 font-medium">切换样式：</label>
+      <select id="styleSelect" class="px-2 py-1 border border-gray-200 rounded hover:border-primary">
+        <option value="style-simple">默认简约风</option>
+        <option value="style-business">商务风</option>
+        <option value="style-fresh">清新风</option>
+        <option value="style-vintage">复古风</option>
+        <option value="style-forest">森系风</option>
+        <option value="style-ins">ins风</option>
+      </select>
     </div>
+  </div>
+</div>
 
-    <!-- 媒体插入弹窗（默认隐藏，点击插入媒体按钮显示） -->
-    <div id="mediaModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 class="text-xl font-bold text-primary mb-4">插入效果图/短视频</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-gray-700 mb-1">选择媒体类型</label>
-                    <select id="mediaType" class="w-full p-2 border border-gray-300 rounded">
-                        <option value="image">效果图（图片）</option>
-                        <option value="video">短视频</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">上传媒体文件</label>
-                    <input type="file" id="mediaFile" accept="image/*,video/*" class="w-full p-2 border border-gray-300 rounded" required>
-                </div>
-                <div>
-                    <label class="block text-gray-700 mb-1">媒体尺寸</label>
-                    <select id="mediaSize" class="w-full p-2 border border-gray-300 rounded">
-                        <option value="media-sm">小（1/4宽度）</option>
-                        <option value="media-md">中（1/3宽度）</option>
-                        <option value="media-lg">大（1/2宽度）</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2">
-                    <button id="cancelMedia" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100 transition-colors">取消</button>
-                    <button id="confirmMedia" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/80 transition-colors">确认插入</button>
-                </div>
-            </div>
-        </div>
+<!-- 分享链接弹窗 -->
+<div id="shareModal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <h3 class="text-xl font-bold mb-4">分享链接</h3>
+    <div class="flex mb-4">
+      <input type="text" id="shareLink" readonly class="flex-1 px-3 py-2 border border-gray-200 rounded" />
+      <button id="copyLinkBtn" class="ml-2 px-3 py-2 bg-primary text-white rounded hover:bg-primary/80">复制</button>
     </div>
+    <p class="text-sm text-gray-500 mb-4">该链接为只读模式，他人可查看但无法编辑你的简历</p>
+    <button id="closeShareModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">关闭</button>
+  </div>
+</div>
 
-    <!-- 主要内容区（新增媒体插入、目录联动功能，适配工作经历、项目经历） -->
-    <main class="container mx-auto px-4 py-8" id="resumeMain">
+<!-- 引入依赖 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="resume-menu.js"></script>
+<script src="resume-templates.js"></script>
+
+<!-- 原有script逻辑扩展 -->
+<script>
+  // ========== 原有逻辑保留（渲染菜单、样式切换） ==========
+  function renderMenu() { /* 原有代码 */ }
+  // 样式切换原有逻辑...
+
+  // ========== 新增：模板库逻辑 ==========
+  const templateSelect = document.getElementById('templateSelect');
+  templateSelect.addEventListener('change', function() {
+    if (this.value) {
+      if (confirm('切换模板将清空现有内容，是否确认？')) {
+        initTemplate(this.value);
+      } else {
+        this.value = '';
+      }
+    }
+  });
+
+  // ========== 新增：头像上传逻辑 ==========
+  const avatarUpload = document.getElementById('avatarUpload');
+  const avatarPreview = document.getElementById('avatarPreview');
+  
+  // 初始化头像（从本地存储读取）
+  const savedAvatar = localStorage.getItem('resume_avatar');
+  if (savedAvatar) {
+    avatarPreview.src = savedAvatar;
+    avatarPreview.classList.remove('hidden');
+    // 将头像插入个人信息板块
+    const profileAvatar = document.createElement('img');
+    profileAvatar.src = savedAvatar;
+    profileAvatar.className = 'w-20 h-20 rounded-full object-cover mb-4';
+    document.querySelector('#profile .resume-card > div').insertBefore(profileAvatar, document.querySelector('#profile .item-title'));
+  }
+  
+  avatarUpload.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const base64 = e.target.result;
+      // 预览头像
+      avatarPreview.src = base64;
+      avatarPreview.classList.remove('hidden');
+      
+      // 保存到本地存储
+      localStorage.setItem('resume_avatar', base64);
+      
+      // 更新页面头像
+      let profileAvatar = document.querySelector('#profile .resume-card img');
+      if (profileAvatar) {
+        profileAvatar.src = base64;
+      } else {
+        profileAvatar = document.createElement('img');
+        profileAvatar.src = base64;
+        profileAvatar.className = 'w-20 h-20 rounded-full object-cover mb-4';
+        document.querySelector('#profile .resume-card > div').insertBefore(profileAvatar, document.querySelector('#profile .item-title'));
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ========== 新增：导出PDF逻辑 ==========
+  const exportPdfBtn = document.getElementById('exportPdfBtn');
+  exportPdfBtn.addEventListener('click', async function() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    // 隐藏功能栏，避免导出多余内容
+    document.querySelector('.sticky.top-0.z-20').style.display = 'none';
+    
+    // 获取简历主体内容
+    const resumeMain = document.getElementById('resumeMain');
+    const canvas = await html2canvas(resumeMain, {
+      scale: 2, // 提高分辨率
+      useCORS: true,
+      logging: false
+    });
+    
+    // 恢复功能栏显示
+    document.querySelector('.sticky.top-0.z-20').style.display = 'block';
+    
+    const imgData = canvas.toDataURL('image/png');
+    const imgWidth = 210; // A4宽度
+    const imgHeight = canvas.height * imgWidth / canvas.width;
+    
+    // 添加图片到PDF
+    pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+    // 保存PDF
+    pdf.save(`${document.querySelector('#profile .item-title').textContent}_简历.pdf`);
+  });
+
+  // ========== 新增：分享功能逻辑 ==========
+  const shareBtn = document.getElementById('shareBtn');
+  const shareModal = document.getElementById('shareModal');
+  const shareLink = document.getElementById('shareLink');
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  const closeShareModal = document.getElementById('closeShareModal');
+  
+  // 生成用户ID（简易实现，实际项目从后端获取）
+  function getUserId() {
+    let userId = localStorage.getItem('resume_user_id');
+    if (!userId) {
+      // 生成随机ID
+      userId = 'user_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('resume_user_id', userId);
+    }
+    return userId;
+  }
+  
+  shareBtn.addEventListener('click', function() {
+    const userId = getUserId();
+    // 生成只读链接（实际项目需后端配合，此处为示例）
+    const readonlyLink = `${window.location.origin}${window.location.pathname}?readonly=1&uid=${userId}`;
+    shareLink.value = readonlyLink;
+    shareModal.classList.remove('hidden');
+    
+    // 模拟保存简历数据到后端（实际项目需接口请求）
+    console.log('保存简历数据到后端，用户ID：', userId);
+    console.log('简历数据：', getResumeData());
+  });
+  
+  closeShareModal.addEventListener('click', function() {
+    shareModal.classList.add('hidden');
+  });
+  
+  copyLinkBtn.addEventListener('click', function() {
+    shareLink.select();
+    document.execCommand('copy');
+    alert('链接已复制到剪贴板！');
+  });
+  
+  // 读取URL参数，开启只读模式
+  function checkReadonlyMode() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReadonly = urlParams.get('readonly') === '1';
+    if (isReadonly) {
+      // 移除所有编辑能力
+      document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+        el.contentEditable = 'false';
+        el.classList.remove('editable');
+      });
+      // 隐藏添加按钮
+      document.querySelectorAll('button[id*="add"]').forEach(btn => {
+        btn.style.display = 'none';
+      });
+      // 隐藏功能操作栏
+      document.querySelector('.sticky.top-0.z-20').style.display = 'none';
+    }
+  }
+  
+  // 获取简历数据（用于保存到后端）
+  function getResumeData() {
+    const resumeData = {
+      profile: {
+        name: document.querySelector('#profile .item-title').textContent,
+        title: document.querySelector('#profile .item-subtitle').textContent,
+        avatar: localStorage.getItem('resume_avatar'),
+        contact: {
+          phone: document.querySelectorAll('#profile .editable')[2].textContent,
+          email: document.querySelectorAll('#profile .editable')[3].textContent
+        },
+        intro: document.querySelector('#profile p.editable').textContent
+      },
+      // 其他板块数据同理收集
+    };
+    return resumeData;
+  }
+  
+  // 页面加载时检查只读模式
+  window.addEventListener('load', () => {
+    renderMenu();
+    // 原有样式恢复逻辑...
+    checkReadonlyMode(); // 新增
+  });
+</script>
+    <!-- 简历主体内容 -->
+    <main id="resumeMain" class="container mx-auto px-4 py-8">
         <!-- 个人信息部分 -->
         <section id="profile" class="resume-card mb-8">
-            <h2 class="section-title editable" contenteditable="true">个人信息</h2>
-            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <!-- 头像上传 -->
-                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary relative">
-                    <img id="avatarImg" src="https://picsum.photos/200/200" alt="个人头像" class="w-full h-full object-cover">
-                    <input type="file" id="avatarInput" accept="image/*" class="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer">
-                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs text-center py-1">
-                        点击更换头像
-                    </div>
+            <div class="flex flex-col md:flex-row items-center gap-6">
+                <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-primary">
+                    <img src="https://picsum.photos/200/200" alt="头像" class="w-full h-full object-cover editable" data-type="image">
                 </div>
-                <!-- 基本信息 -->
-                <div class="flex-1">
-                    <h3 class="text-3xl font-bold text-secondary mb-2 editable" contenteditable="true">张三</h3>
-                    <p class="text-lg text-gray-600 mb-4 editable" contenteditable="true">前端开发工程师 | 5年工作经验</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="flex-1 text-center md:text-left">
+                    <h1 class="text-3xl font-bold text-primary editable" contenteditable="true">张三</h1>
+                    <p class="text-xl text-secondary mt-2 editable" contenteditable="true">前端开发高级工程师</p>
+                    <div class="mt-4 flex flex-wrap justify-center md:justify-start gap-4 text-sm">
                         <div class="flex items-center gap-2">
                             <i class="fas fa-birthday-cake text-primary w-5 text-center"></i>
-                            <span class="editable" contenteditable="true">1990年10月</span>
+                            <span class="editable" contenteditable="true">1996-01-01</span>
                         </div>
                         <div class="flex items-center gap-2">
-                            <i class="fas fa-flag text-primary w-5 text-center"></i>
-                            <span class="editable" contenteditable="true">中国 | 北京</span>
+                            <i class="fas fa-map-marker-alt text-primary w-5 text-center"></i>
+                            <span class="editable" contenteditable="true">北京市朝阳区</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="fas fa-phone text-primary w-5 text-center"></i>
@@ -179,10 +369,6 @@
                         <div class="flex items-center gap-2">
                             <i class="fas fa-envelope text-primary w-5 text-center"></i>
                             <span class="editable" contenteditable="true">zhangsan@example.com</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-phone text-primary w-5 text-center"></i>
-                            <span class="editable" contenteditable="true">13800138000</span>
                         </div>
                     </div>
                     <p class="mt-4 text-gray-700 editable" contenteditable="true">
@@ -426,332 +612,501 @@
     <footer class="bg-secondary text-white py-6 mt-8">
         <div class="container mx-auto px-4 text-center">
             <p class="editable" contenteditable="true">© 2026 张三 - 个人简历 | 所有权利保留</p>
-            <p class="text-sm mt-2 text-gray-300">使用HTML + Tailwind CSS构建 | 可在线编辑 | 免费Git部署 | 多样式切换 | 只读模式</p>
+            <p class="text-sm mt-2 text-gray-300">多人版简历模板 | HTML + Tailwind CSS | 数据本地存储 | 多用户隔离</p>
         </div>
     </footer>
 
-    <!-- JavaScript交互逻辑（新增样式切换、只读模式、只读网址生成逻辑） -->
+    <!-- 新增：用户名称输入弹窗 -->
+    <div id="userNameModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-80">
+            <h3 class="text-lg font-bold mb-4">新增用户</h3>
+            <input type="text" id="userNameInput" placeholder="请输入用户名称（如：李四）" class="w-full border border-gray-300 rounded px-3 py-2 mb-4">
+            <div class="flex justify-end gap-2">
+                <button id="cancelUserNameBtn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100">取消</button>
+                <button id="confirmUserNameBtn" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/80">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心交互逻辑 -->
     <script>
-        // ========== 新增：目录（导航菜单）动态渲染逻辑 ==========
-        // 渲染导航菜单（桌面端+移动端），读取外部resume-menu.js配置
+        // ========== 全局配置 ==========
+        const STORAGE_KEY = 'multiUserResume'; // 多用户数据存储key
+        let currentUserId = 'default'; // 当前激活的用户ID
+        let userList = []; // 用户列表 [{ id: 'xxx', name: 'xxx' }]
+
+        // ========== 工具函数 ==========
+        // 1. 生成唯一ID
+        function generateId() {
+            return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 2. 初始化/读取用户数据
+        function initUserData() {
+            const storedData = localStorage.getItem(STORAGE_KEY);
+            if (storedData) {
+                const parsedData = JSON.parse(storedData);
+                userList = parsedData.users || [{ id: 'default', name: '默认用户' }];
+                currentUserId = parsedData.currentUserId || 'default';
+            } else {
+                // 初始化默认用户
+                userList = [{ id: 'default', name: '默认用户' }];
+                saveUserDataToStorage();
+            }
+            renderUserList();
+            updateCurrentUserName();
+            loadCurrentUserResumeData();
+        }
+
+        // 3. 保存用户列表到本地存储
+        function saveUserDataToStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                users: userList,
+                currentUserId: currentUserId
+            }));
+        }
+
+        // 4. 读取当前用户的简历数据
+        function loadCurrentUserResumeData() {
+            const userDataKey = `resume_${currentUserId}`;
+            const userStyleKey = `resume_style_${currentUserId}`;
+            const userMenuKey = `resumeMenu_${currentUserId}`;
+            const userReadOnlyKey = `resume_readonly_${currentUserId}`;
+
+            // 加载简历内容
+            const savedContent = localStorage.getItem(userDataKey);
+            if (savedContent) {
+                const contentMap = JSON.parse(savedContent);
+                // 恢复所有可编辑元素内容
+                document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                    const key = el.dataset.contentKey || getElementUniqueKey(el);
+                    if (contentMap[key]) {
+                        el.innerHTML = contentMap[key];
+                    }
+                });
+                // 恢复技能进度条
+                document.querySelectorAll('.skill-bar').forEach((bar, index) => {
+                    const percentEl = bar.parentElement.previousElementSibling?.querySelector('.skill-percent');
+                    if (percentEl && contentMap[getElementUniqueKey(percentEl)]) {
+                        const percent = contentMap[getElementUniqueKey(percentEl)].replace('%', '');
+                        bar.style.width = `${percent}%`;
+                    }
+                });
+            }
+
+            // 加载样式
+            const savedStyle = localStorage.getItem(userStyleKey) || 'style-simple';
+            resumeBody.classList.remove('style-simple', 'style-business', 'style-fresh', 'style-vintage', 
+                                        'style-minimal', 'style-tech', 'style-forest', 'style-ins', 'style-dark');
+            resumeBody.classList.add(savedStyle);
+            styleSelect.value = savedStyle;
+
+            // 加载菜单配置
+            const savedMenu = localStorage.getItem(userMenuKey);
+            if (savedMenu) {
+                resumeMenu = JSON.parse(savedMenu);
+            }
+            renderMenu();
+
+            // 加载只读模式
+            const isReadOnly = localStorage.getItem(userReadOnlyKey) === 'true';
+            const editableElements = document.querySelectorAll('[contenteditable="true"]');
+            editableElements.forEach(el => {
+                el.contentEditable = !isReadOnly;
+                el.classList.toggle('editable', !isReadOnly);
+            });
+            readOnlyToggle.textContent = isReadOnly ? '开启编辑模式' : '开启只读模式';
+        }
+
+        // 5. 保存当前用户的简历数据
+        function saveCurrentUserResumeData() {
+            const userDataKey = `resume_${currentUserId}`;
+            const contentMap = {};
+
+            // 保存所有可编辑元素内容
+            document.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                const key = getElementUniqueKey(el);
+                el.dataset.contentKey = key; // 标记唯一key
+                contentMap[key] = el.innerHTML;
+            });
+
+            localStorage.setItem(userDataKey, JSON.stringify(contentMap));
+            // 保存样式（单独存储，方便快速读取）
+            localStorage.setItem(`resume_style_${currentUserId}`, resumeBody.classList.contains('style-simple') ? 'style-simple' : 
+                                Array.from(resumeBody.classList).find(cls => cls.startsWith('style-')) || 'style-simple');
+            // 保存菜单配置
+            localStorage.setItem(`resumeMenu_${currentUserId}`, JSON.stringify(resumeMenu));
+        }
+
+        // 6. 获取元素唯一标识（用于数据存储）
+        function getElementUniqueKey(el) {
+            if (el.id) return el.id;
+            let key = el.tagName.toLowerCase();
+            const parent = el.parentElement;
+            if (parent && parent.id) {
+                key = `${parent.id}_${key}_${Array.from(parent.children).indexOf(el)}`;
+            } else {
+                key = `${key}_${Math.random().toString(36).substr(2, 5)}`;
+            }
+            return key;
+        }
+
+        // 7. 渲染用户列表
+        function renderUserList() {
+            const userListEl = document.getElementById('userList');
+            userListEl.innerHTML = '';
+            userList.forEach(user => {
+                const li = document.createElement('li');
+                li.className = `px-2 py-1 hover:bg-gray-100 rounded cursor-pointer ${user.id === currentUserId ? 'bg-primary/10 text-primary font-medium' : ''}`;
+                li.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span>${user.name}</span>
+                        ${user.id === 'default' ? '' : '<i class="fas fa-check text-primary hidden"></i>'}
+                    </div>
+                `;
+                li.addEventListener('click', () => {
+                    switchUser(user.id);
+                });
+                userListEl.appendChild(li);
+            });
+        }
+
+        // 8. 切换用户
+        function switchUser(userId) {
+            // 保存当前用户数据
+            saveCurrentUserResumeData();
+            // 切换用户ID
+            currentUserId = userId;
+            // 更新存储
+            saveUserDataToStorage();
+            // 刷新视图
+            renderUserList();
+            updateCurrentUserName();
+            loadCurrentUserResumeData();
+            // 关闭下拉菜单
+            document.getElementById('userDropdown').classList.add('hidden');
+        }
+
+        // 9. 更新当前用户名显示
+        function updateCurrentUserName() {
+            const currentUser = userList.find(u => u.id === currentUserId) || userList[0];
+            document.getElementById('currentUserName').textContent = currentUser.name;
+        }
+
+        // ========== 导航菜单渲染 ==========
         function renderMenu() {
             const desktopMenu = document.getElementById('desktopMenu');
             const mobileMenu = document.getElementById('mobileMenu');
-            // 清空原有菜单（避免重复渲染）
             desktopMenu.innerHTML = '';
             mobileMenu.innerHTML = '';
             
-            // 遍历外部配置的目录，动态生成菜单
             resumeMenu.forEach(menuItem => {
-                // 只渲染show为true的目录
                 if (menuItem.show) {
-                    // 桌面端菜单项
+                    // 桌面端菜单项（锚点跳转）
                     const desktopLi = document.createElement('li');
-                    desktopLi.innerHTML = `${menuItem.name}`;
+                    desktopLi.innerHTML = `<a href="#${menuItem.id}" class="block py-1 px-2 hover:bg-white/20 rounded transition-colors">${menuItem.name}</a>`;
                     desktopMenu.appendChild(desktopLi);
                     
-                    // 移动端菜单项
+                    // 移动端菜单项（锚点跳转）
                     const mobileLi = document.createElement('li');
-                    mobileLi.innerHTML = `${menuItem.name}`;
+                    mobileLi.innerHTML = `<a href="#${menuItem.id}" class="block py-1 px-2 hover:bg-white/20 rounded transition-colors">${menuItem.name}</a>`;
                     mobileMenu.appendChild(mobileLi);
                 }
             });
         }
 
-        // ========== 新增：样式切换逻辑 ==========
-        const styleSelect = document.getElementById('styleSelect');
-        const resumeBody = document.getElementById('resumeBody');
-        
-        // 页面加载时，恢复上次选择的样式（本地存储）
-        window.addEventListener('load', () => {
-            renderMenu(); // 渲染导航菜单
-            // 恢复保存的样式
-            const savedStyle = localStorage.getItem('resume_selected_style');
-            if (savedStyle) {
-                // 移除所有样式类，添加保存的样式类
-                resumeBody.classList.remove('style-simple', 'style-business', 'style-fresh', 'style-vintage');
-                resumeBody.classList.add(savedStyle);
-                // 同步下拉框选中状态
-                styleSelect.value = savedStyle;
-            }
-            // 原有加载逻辑（恢复数据、技能进度条）不变
-            const savedData = JSON.parse(loadData('all_data') || '{}');
-            
-            // 恢复头像
-            if (savedData.avatar) {
-                avatarImg.src = savedData.avatar;
-            }
-            
-            // 恢复文本内容
-            const editableElements = document.querySelectorAll('[contenteditable="true"]');
-            editableElements.forEach((el, index) => {
-                const id = el.id || `element_${index}`;
-                if (savedData[id]) {
-                    el.innerHTML = savedData[id];
+        // ========== 事件绑定 ==========
+        function bindEvents() {
+            // 1. 用户菜单下拉/收起
+            const userMenuBtn = document.getElementById('userMenuBtn');
+            const userDropdown = document.getElementById('userDropdown');
+            userMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                userDropdown.classList.toggle('hidden');
+            });
+            // 点击外部关闭下拉菜单
+            document.addEventListener('click', () => {
+                userDropdown.classList.add('hidden');
+            });
+
+            // 2. 新增用户按钮
+            document.getElementById('addUserBtn').addEventListener('click', () => {
+                document.getElementById('userNameModal').classList.remove('hidden');
+                document.getElementById('userNameInput').value = '';
+                document.getElementById('userNameInput').focus();
+            });
+
+            // 3. 取消新增用户
+            document.getElementById('cancelUserNameBtn').addEventListener('click', () => {
+                document.getElementById('userNameModal').classList.add('hidden');
+            });
+
+            // 4. 确认新增用户
+            document.getElementById('confirmUserNameBtn').addEventListener('click', () => {
+                const userName = document.getElementById('userNameInput').value.trim();
+                if (!userName) {
+                    alert('请输入用户名称！');
+                    return;
+                }
+                // 创建新用户
+                const newUserId = generateId();
+                userList.push({ id: newUserId, name: userName });
+                saveUserDataToStorage();
+                // 切换到新用户
+                switchUser(newUserId);
+                // 关闭弹窗
+                document.getElementById('userNameModal').classList.add('hidden');
+            });
+
+            // 5. 删除当前用户
+            document.getElementById('deleteUserBtn').addEventListener('click', () => {
+                if (currentUserId === 'default') {
+                    alert('默认用户无法删除！');
+                    return;
+                }
+                if (confirm(`确定要删除【${document.getElementById('currentUserName').textContent}】吗？数据将永久删除！`)) {
+                    // 删除用户数据
+                    localStorage.removeItem(`resume_${currentUserId}`);
+                    localStorage.removeItem(`resume_style_${currentUserId}`);
+                    localStorage.removeItem(`resumeMenu_${currentUserId}`);
+                    localStorage.removeItem(`resume_readonly_${currentUserId}`);
+                    // 从列表移除
+                    userList = userList.filter(u => u.id !== currentUserId);
+                    // 切换到默认用户
+                    currentUserId = 'default';
+                    saveUserDataToStorage();
+                    renderUserList();
+                    updateCurrentUserName();
+                    loadCurrentUserResumeData();
                 }
             });
 
-            // 重新计算技能进度条
-            document.querySelectorAll('.skill-percent').forEach(percentEl => {
-                const percentText = percentEl.textContent.trim().replace('%', '');
-                const percent = parseInt(percentText);
-                if (!isNaN(percent) && percent >= 0 && percent <= 100) {
-                    const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
-                    skillBar.style.width = `${percent}%`;
+            // 6. 重置当前用户数据
+            document.getElementById('resetUserBtn').addEventListener('click', () => {
+                if (confirm(`确定要重置【${document.getElementById('currentUserName').textContent}】的简历数据吗？所有编辑内容将恢复为默认！`)) {
+                    localStorage.removeItem(`resume_${currentUserId}`);
+                    localStorage.removeItem(`resume_style_${currentUserId}`);
+                    localStorage.removeItem(`resumeMenu_${currentUserId}`);
+                    loadCurrentUserResumeData();
                 }
             });
 
-            // 恢复只读网址（如果有）
-            const readOnlyUrl = localStorage.getItem('resume_readonly_url');
-            if(readOnlyUrl) {
-                    document.getElementById('readOnlyUrl').value = readOnlyUrl;
-                    document.getElementById('readOnlyUrlContainer').classList.remove('hidden');
-                }
+            // 7. 导出当前用户数据
+            document.getElementById('exportUserBtn').addEventListener('click', () => {
+                // 先保存最新数据
+                saveCurrentUserResumeData();
+                // 组装导出数据
+                const exportData = {
+                    userInfo: userList.find(u => u.id === currentUserId),
+                    resumeContent: JSON.parse(localStorage.getItem(`resume_${currentUserId}`) || '{}'),
+                    style: localStorage.getItem(`resume_style_${currentUserId}`) || 'style-simple',
+                    menu: JSON.parse(localStorage.getItem(`resumeMenu_${currentUserId}`) || JSON.stringify(resumeMenu))
+                };
+                // 生成JSON文件并下载
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `${exportData.userInfo.name}_简历数据_${new Date().toLocaleDateString()}.json`;
+                a.click();
+                URL.revokeObjectURL(a.href);
             });
 
-            // 样式切换事件
+            // 8. 导入用户数据
+            document.getElementById('importUserFile').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const importData = JSON.parse(event.target.result);
+                        // 验证数据格式
+                        if (!importData.userInfo || !importData.resumeContent) {
+                            alert('导入数据格式错误！');
+                            return;
+                        }
+                        // 创建新用户（避免覆盖）
+                        const newUserId = generateId();
+                        userList.push({ 
+                            id: newUserId, 
+                            name: `${importData.userInfo.name}_导入_${new Date().getTime().toString().slice(-4)}` 
+                        });
+                        saveUserDataToStorage();
+                        // 保存导入的数据
+                        localStorage.setItem(`resume_${newUserId}`, JSON.stringify(importData.resumeContent));
+                        localStorage.setItem(`resume_style_${newUserId}`, importData.style || 'style-simple');
+                        localStorage.setItem(`resumeMenu_${newUserId}`, JSON.stringify(importData.menu || resumeMenu));
+                        // 切换到新导入的用户
+                        switchUser(newUserId);
+                        // 清空文件选择
+                        document.getElementById('importUserFile').value = '';
+                        alert('数据导入成功！');
+                    } catch (err) {
+                        alert('导入失败：' + err.message);
+                    }
+                };
+                reader.readAsText(file);
+            });
+
+            // 9. 样式切换
+            const styleSelect = document.getElementById('styleSelect');
+            const resumeBody = document.getElementById('resumeBody');
             styleSelect.addEventListener('change', (e) => {
                 const selectedStyle = e.target.value;
-                // 移除所有样式类，添加选中的样式类
-                resumeBody.classList.remove('style-simple', 'style-business', 'style-fresh', 'style-vintage');
+                // 移除所有样式类
+                resumeBody.classList.remove('style-simple', 'style-business', 'style-fresh', 'style-vintage', 
+                                            'style-minimal', 'style-tech', 'style-forest', 'style-ins', 'style-dark');
+                // 添加选中的样式类
                 resumeBody.classList.add(selectedStyle);
-                // 本地存储选中的样式，刷新页面后恢复
-                localStorage.setItem('resume_selected_style', selectedStyle);
+                // 保存到当前用户的存储
+                localStorage.setItem(`resume_style_${currentUserId}`, selectedStyle);
             });
 
-            // ========== 新增：只读模式逻辑 ==========
-            const readOnlyBtn = document.getElementById('readOnlyBtn');
-            const saveBtn = document.getElementById('saveBtn');
-            const resumeMain = document.getElementById('resumeMain');
-            const editableElements = document.querySelectorAll('[contenteditable="true"]');
-            const addButtons = document.querySelectorAll('[id^="add"]'); // 所有新增按钮
-            const avatarInput = document.getElementById('avatarInput');
-            let isReadOnly = false;
-
-            // 只读模式切换
-            readOnlyBtn.addEventListener('click', () => {
-                isReadOnly = !isReadOnly;
-                if (isReadOnly) {
-                    // 进入只读模式：禁止编辑、隐藏新增按钮、隐藏头像上传、修改按钮文本
-                    editableElements.forEach(el => el.contentEditable = 'false');
-                    addButtons.forEach(btn => btn.classList.add('hidden'));
-                    avatarInput.classList.add('hidden');
-                    readOnlyBtn.innerHTML = ' 编辑模式';
-                    saveBtn.classList.add('hidden');
-                    styleSelect.disabled = true; // 只读模式下禁止切换样式
-                } else {
-                    // 退出只读模式：恢复编辑、显示新增按钮、显示头像上传、修改按钮文本
-                    editableElements.forEach(el => el.contentEditable = 'true');
-                    addButtons.forEach(btn => btn.classList.remove('hidden'));
-                    avatarInput.classList.remove('hidden');
-                    readOnlyBtn.innerHTML = ' 只读模式';
-                    saveBtn.classList.remove('hidden');
-                    styleSelect.disabled = false; // 恢复样式切换权限
-                }
-            });
-
-            // ========== 新增：只读网址生成逻辑 ==========
-            const saveData = (key, data) => {
-                localStorage.setItem(key, JSON.stringify(data));
-            };
-
-            const loadData = (key) => {
-                return localStorage.getItem(key);
-            };
-
-            // 保存简历时生成只读网址（模拟，实际可对接Git Pages等部署服务）
-            saveBtn.addEventListener('click', () => {
-                // 收集所有编辑内容
-                const allData = {};
-                // 收集头像信息
-                allData.avatar = document.getElementById('avatarImg').src;
-                // 收集所有可编辑文本内容
-                editableElements.forEach((el, index) => {
-                    const id = el.id || `element_${index}`;
-                    allData[id] = el.innerHTML;
+            // 10. 只读模式切换
+            const readOnlyToggle = document.getElementById('readOnlyToggle');
+            readOnlyToggle.addEventListener('click', () => {
+                const editableElements = document.querySelectorAll('[contenteditable="true"]');
+                const isReadOnly = !editableElements[0].isContentEditable;
+                
+                editableElements.forEach(el => {
+                    el.contentEditable = !isReadOnly;
+                    el.classList.toggle('editable', !isReadOnly);
                 });
-                // 本地保存所有数据
-                saveData('all_data', allData);
-
-                // 生成只读网址（模拟，实际部署后替换为真实域名）
-                const gitUsername = 'zhangsan'; // 可替换为实际Git用户名
-                const repoName = 'resume-website'; // 可替换为实际仓库名
-                const readOnlyUrl = `https://${gitUsername}.github.io/${repoName}/?readOnly=true`;
-                // 保存只读网址到本地存储
-                localStorage.setItem('resume_readonly_url', readOnlyUrl);
-                // 显示只读网址容器
-                document.getElementById('readOnlyUrl').value = readOnlyUrl;
-                document.getElementById('readOnlyUrlContainer').classList.remove('hidden');
-
-                // 提示保存成功
-                alert('简历保存成功！只读网址已生成，可复制分享给面试官。');
+                
+                readOnlyToggle.textContent = isReadOnly ? '开启编辑模式' : '开启只读模式';
+                localStorage.setItem(`resume_readonly_${currentUserId}`, isReadOnly);
             });
 
-            // 复制只读网址功能
-            const copyUrlBtn = document.getElementById('copyUrlBtn');
-            const readOnlyUrlInput = document.getElementById('readOnlyUrl');
-            copyUrlBtn.addEventListener('click', () => {
-                readOnlyUrlInput.select();
-                document.execCommand('copy');
-                alert('只读网址已复制到剪贴板！');
-            });
-
-            // ========== 原有功能：头像上传逻辑 ==========
-            const avatarImg = document.getElementById('avatarImg');
-            avatarInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        avatarImg.src = event.target.result;
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-
-            // ========== 原有功能：技能进度条联动逻辑 ==========
-            document.querySelectorAll('.skill-percent').forEach(percentEl => {
-                percentEl.addEventListener('input', () => {
-                    const percentText = percentEl.textContent.trim().replace('%', '');
-                    const percent = parseInt(percentText);
-                    if (!isNaN(percent) && percent >= 0 && percent <= 100) {
-                        const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
-                        skillBar.style.width = `${percent}%`;
-                    } else {
-                        // 输入非法值时重置为默认值
-                        percentEl.textContent = '50%';
-                        const skillBar = percentEl.closest('.skill-item').querySelector('.skill-bar');
-                        skillBar.style.width = '50%';
+            // 11. 自动保存可编辑内容（失去焦点时）
+            document.addEventListener('blur', (e) => {
+                if (e.target.hasAttribute('contenteditable')) {
+                    saveCurrentUserResumeData();
+                    // 同步技能进度条
+                    if (e.target.classList.contains('skill-percent')) {
+                        const percent = e.target.textContent.replace('%', '');
+                        const bar = e.target.parentElement.nextElementSibling?.querySelector('.skill-bar');
+                        if (bar) bar.style.width = `${percent}%`;
                     }
-                });
-            });
+                }
+            }, true);
 
-            // ========== 原有功能：移动端菜单切换逻辑 ==========
-            const menuBtn = document.getElementById('menuBtn');
-            const mobileMenu = document.getElementById('mobileMenu');
-            menuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            // ========== 原有功能：新增板块逻辑（以工作经历为例，其他板块同理） ==========
-            const addExperienceBtn = document.getElementById('addExperienceBtn');
-            const experienceContainer = document.querySelector('#experience .space-y-6');
-            addExperienceBtn.addEventListener('click', () => {
+            // ========== 原有添加功能绑定 ==========
+            // 添加工作经历
+            document.getElementById('addExperienceBtn')?.addEventListener('click', () => {
+                const experienceContainer = document.getElementById('addExperienceBtn').parentElement;
                 const newExperience = document.createElement('div');
-                newExperience.className = 'border-l-4 border-primary pl-4';
+                newExperience.className = 'border-l-4 border-primary pl-4 mt-6';
                 newExperience.innerHTML = `
-                    前端开发工程师XX公司 | XXXX.XX - XXXX.XX负责XX项目的前端开发工作，完成页面布局和交互实现配合后端开发人员对接接口，调试数据展示问题
+                    <h3 class="item-title editable" contenteditable="true">新职位</h3>
+                    <p class="item-subtitle editable" contenteditable="true">新公司 | 起止时间</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">工作职责1</li>
+                        <li class="editable" contenteditable="true">工作职责2</li>
+                    </ul>
                 `;
-                // 插入到添加按钮上方
-                experienceContainer.insertBefore(newExperience, addExperienceBtn);
+                experienceContainer.insertBefore(newExperience, document.getElementById('addExperienceBtn'));
+                saveCurrentUserResumeData();
             });
 
-            // 其他新增按钮逻辑（项目、教育、证书、技能、软技能、语言）同理，保持代码结构一致
-            const addProjectBtn = document.getElementById('addProjectBtn');
-            const projectContainer = document.querySelector('#project .space-y-6');
-            addProjectBtn.addEventListener('click', () => {
+            // 添加项目经历
+            document.getElementById('addProjectBtn')?.addEventListener('click', () => {
+                const projectContainer = document.getElementById('addProjectBtn').parentElement;
                 const newProject = document.createElement('div');
-                newProject.className = 'border-l-4 border-primary pl-4';
+                newProject.className = 'border-l-4 border-primary pl-4 mt-6';
                 newProject.innerHTML = `
-                    XX项目开发核心开发 | XXXX.XX - XXXX.XX | 团队规模：X人项目描述：简要描述项目背景、核心功能和价值。负责项目前端页面开发和交互实现，提升用户体验优化代码结构，提高项目可维护性和加载速度
+                    <h3 class="item-title editable" contenteditable="true">新项目名称</h3>
+                    <p class="item-subtitle editable" contenteditable="true">角色 | 时间 | 团队规模</p>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">项目描述：</p>
+                    <ul class="mt-2 list-disc list-inside text-gray-700 space-y-1">
+                        <li class="editable" contenteditable="true">项目成果1</li>
+                        <li class="editable" contenteditable="true">项目成果2</li>
+                    </ul>
                 `;
-                projectContainer.insertBefore(newProject, addProjectBtn);
+                projectContainer.insertBefore(newProject, document.getElementById('addProjectBtn'));
+                saveCurrentUserResumeData();
             });
 
-            const addEducationBtn = document.getElementById('addEducationBtn');
-            const educationContainer = document.querySelector('#education .space-y-6');
-            addEducationBtn.addEventListener('click', () => {
+            // 添加教育背景
+            document.getElementById('addEducationBtn')?.addEventListener('click', () => {
+                const educationContainer = document.getElementById('addEducationBtn').parentElement;
                 const newEducation = document.createElement('div');
-                newEducation.className = 'border-l-4 border-primary pl-4';
+                newEducation.className = 'border-l-4 border-primary pl-4 mt-6';
                 newEducation.innerHTML = `
-                    XX专业 | XX学历XX学校 | XXXX.XX - XXXX.XXGPA：X.X/X.X | 专业排名：前X% | 获得XX奖学金
+                    <h3 class="item-title editable" contenteditable="true">新学历 | 学位</h3>
+                    <p class="item-subtitle editable" contenteditable="true">学校名称 | 起止时间</p>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">备注：</p>
                 `;
-                educationContainer.insertBefore(newEducation, addEducationBtn);
+                educationContainer.insertBefore(newEducation, document.getElementById('addEducationBtn'));
+                saveCurrentUserResumeData();
             });
 
-            const addCertificateBtn = document.getElementById('addCertificateBtn');
-            const certificateContainer = document.querySelector('#certificate .space-y-4');
-            addCertificateBtn.addEventListener('click', () => {
+            // 添加证书荣誉
+            document.getElementById('addCertificateBtn')?.addEventListener('click', () => {
+                const certificateContainer = document.getElementById('addCertificateBtn').parentElement;
                 const newCertificate = document.createElement('div');
                 newCertificate.className = 'flex flex-col md:flex-row md:items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors';
                 newCertificate.innerHTML = `
-                    XX证书XXXX年XX月 | XX机构颁发
+                    <i class="fas fa-certificate text-primary text-xl md:w-8 text-center"></i>
+                    <div class="flex-1">
+                        <h3 class="item-title editable" contenteditable="true">新证书/荣誉</h3>
+                        <p class="item-subtitle editable" contenteditable="true">获取时间 | 颁发机构</p>
+                    </div>
                 `;
-                certificateContainer.appendChild(newCertificate);
+                certificateContainer.insertBefore(newCertificate, document.getElementById('addCertificateBtn'));
+                saveCurrentUserResumeData();
             });
 
-            const addSkillBtn = document.getElementById('addSkillBtn');
-            const skillsList = document.getElementById('skillsList');
-            addSkillBtn.addEventListener('click', () => {
+            // 添加技能
+            document.getElementById('addSkillBtn')?.addEventListener('click', () => {
+                const skillsList = document.getElementById('skillsList');
                 const newSkill = document.createElement('div');
                 newSkill.className = 'skill-item';
                 newSkill.innerHTML = `
-                    XX技能80%
+                    <div class="flex justify-between mb-1">
+                        <span class="editable" contenteditable="true">新技能</span>
+                        <span class="skill-percent editable" contenteditable="true">80%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-primary h-2 rounded-full skill-bar" style="width: 80%"></div>
+                    </div>
                 `;
                 skillsList.appendChild(newSkill);
-                // 为新增的技能进度条添加联动事件
-                const newPercentEl = newSkill.querySelector('.skill-percent');
-                newPercentEl.addEventListener('input', () => {
-                    const percentText = newPercentEl.textContent.trim().replace('%', '');
-                    const percent = parseInt(percentText);
-                    if (!isNaN(percent) && percent >= 0 && percent <= 100) {
-                        const skillBar = newPercentEl.closest('.skill-item').querySelector('.skill-bar');
-                        skillBar.style.width = `${percent}%`;
-                    } else {
-                        newPercentEl.textContent = '50%';
-                        const skillBar = newPercentEl.closest('.skill-item').querySelector('.skill-bar');
-                        skillBar.style.width = '50%';
-                    }
-                });
+                saveCurrentUserResumeData();
             });
 
-            const addSoftSkillBtn = document.getElementById('addSoftSkillBtn');
-            const softSkillsList = document.getElementById('softSkillsList');
-            addSoftSkillBtn.addEventListener('click', () => {
+            // 添加软技能
+            document.getElementById('addSoftSkillBtn')?.addEventListener('click', () => {
+                const softSkillsList = document.getElementById('softSkillsList');
                 const newSoftSkill = document.createElement('li');
                 newSoftSkill.className = 'editable';
-                newSoftSkill.contentEditable = 'true';
-                newSoftSkill.textContent = 'XX软技能（如：团队协作、沟通能力等）';
+                newSoftSkill.contentEditable = true;
+                newSoftSkill.textContent = '新软技能';
                 softSkillsList.appendChild(newSoftSkill);
+                saveCurrentUserResumeData();
             });
 
-            const addLanguageBtn = document.getElementById('addLanguageBtn');
-            const languageContainer = document.querySelector('#language .grid');
-            addLanguageBtn.addEventListener('click', () => {
+            // 添加语言能力
+            document.getElementById('addLanguageBtn')?.addEventListener('click', () => {
+                const languageContainer = document.getElementById('addLanguageBtn').parentElement.previousElementSibling;
                 const newLanguage = document.createElement('div');
                 newLanguage.className = 'border border-gray-200 rounded-lg p-4 hover:border-primary transition-colors';
-                newLanguage.innerHTML = `XX语言XX等级 | 熟练程度 | 具体描述（如：能流利沟通、阅读相关文档等）
+                newLanguage.innerHTML = `
+                    <h3 class="item-title editable" contenteditable="true">新语言</h3>
+                    <p class="mt-2 text-gray-700 editable" contenteditable="true">等级 | 能力描述</p>
                 `;
                 languageContainer.appendChild(newLanguage);
+                saveCurrentUserResumeData();
             });
-
-            // ========== 新增：目录导航跳转逻辑（修复原有缺失） ==========
-            // 为动态生成的目录添加跳转功能
-            function addMenuJump() {
-                const menuItems = document.querySelectorAll('#desktopMenu li, #mobileMenu li');
-                menuItems.forEach((item, index) => {
-                    item.addEventListener('click', () => {
-                        const targetId = resumeMenu[index].id;
-                        const targetElement = document.getElementById(targetId);
-                        if (targetElement) {
-                            // 平滑滚动到目标板块
-                            targetElement.scrollIntoView({ behavior: 'smooth' });
-                            // 移动端点击目录后隐藏菜单
-                            mobileMenu.classList.add('hidden');
-                        }
-                    });
-                });
-            }
-
-            // 页面加载完成后添加导航跳转功能
-            window.addEventListener('load', addMenuJump);
-            // 监听目录渲染完成，重新添加跳转功能（防止动态渲染后跳转失效）
-            const observer = new MutationObserver(() => {
-                addMenuJump();
-            });
-            observer.observe(document.getElementById('desktopMenu'), { childList: true });
-            observer.observe(document.getElementById('mobileMenu'), { childList: true });
         }
+
+        // ========== 页面初始化 ==========
+        window.addEventListener('load', () => {
+            // 初始化用户数据
+            initUserData();
+            // 绑定所有事件
+            bindEvents();
+            // 初始渲染菜单
+            renderMenu();
+        });
     </script>
 </body>
 </html>
